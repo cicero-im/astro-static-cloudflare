@@ -18,6 +18,7 @@ const blog = defineCollection({
       translationOf: z.string().optional(),
       category: z.string().optional(),
       tags: z.array(z.string()).default([]),
+      slug: z.string().optional(),
       lastModified: z.string().optional(),
       minutesRead: z.string().optional(),
     }),

@@ -22,8 +22,10 @@ const SITE_DESCRIPTION =
 
 // Add locales here as you translate `messages/<locale>.json`. Each entry maps
 // the inlang locale tag to a BCP-47 language tag used in metadata/manifests.
+// Keep this in sync with `project.inlang/settings.json`.
 const LOCALE_LANGUAGE_TAGS = {
   en: "en-US",
+  pt: "pt-BR",
 };
 
 const WEBMANIFEST_LOCALES = Object.fromEntries(
@@ -154,6 +156,11 @@ export default defineConfig({
         paraglideVitePlugin({
           project: "./project.inlang",
           outdir: "./src/paraglide",
+          // Resolution order: URL prefix → cookie (for switching) → baseLocale fallback.
+          strategy: ["url", "cookie", "baseLocale"],
+          cookieName: "PARAGLIDE_LOCALE",
+          // Emit one module per locale so unused locales are tree-shaken from page bundles.
+          outputStructure: "message-modules",
         }),
       ),
     ],

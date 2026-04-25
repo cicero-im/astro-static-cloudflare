@@ -53,11 +53,25 @@ bun run deploy
 | Docs pages | `src/content/docs/*.md` |
 | Favicon | `public/favicon.svg` |
 
-## Adding a locale
+## i18n
 
-1. Add the locale tag to `LOCALE_LANGUAGE_TAGS` in `astro.config.mjs`.
-2. Add it to `locales` in `project.inlang/settings.json`.
-3. Create `messages/<locale>.json` (or run `bun run i18n:translate` to machine-translate from `en`).
+Two locales are wired up out of the box (`en`, `pt`). The default locale lives at `/`; every other locale is prefixed (`/pt/`).
+
+| What | Where |
+| --- | --- |
+| Locale list (BCP-47 mapping) | `LOCALE_LANGUAGE_TAGS` in `astro.config.mjs` |
+| Locale list (Inlang) | `locales[]` in `project.inlang/settings.json` |
+| Translation strings | `messages/<locale>.json` |
+| Per-locale content | `src/content/blog/<slug>-<locale>.md` (slug is auto-stripped of `-<locale>`) |
+| Compiled runtime | `src/paraglide/` (git-ignored, regenerated on dev/build) |
+
+The Paraglide plugin is configured with `strategy: ["url", "cookie", "baseLocale"]` — URL prefix wins, falls back to a `PARAGLIDE_LOCALE` cookie, then to `baseLocale`. A middleware at `src/middleware.ts` reads the route locale and calls `setLocale()` so SSR-rendered output picks up the right strings.
+
+### Adding a locale
+
+1. Add the locale tag and BCP-47 mapping to `LOCALE_LANGUAGE_TAGS` in `astro.config.mjs`.
+2. Add it to `locales[]` in `project.inlang/settings.json`.
+3. Create `messages/<locale>.json` — or run `bun run i18n:translate` to machine-translate from `en`.
 4. Restart `bun run dev` so Paraglide regenerates `src/paraglide/`.
 
 ## Vite+ commands you'll use
