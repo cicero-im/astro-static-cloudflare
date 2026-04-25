@@ -1,0 +1,29 @@
+---
+import { getCollection, render } from "astro:content";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import { getLocalizedSlugStaticPaths, getRouteLocale } from "../../../lib/i18n-routing";
+import { getDocSlug } from "../../../lib/content-slugs";
+import "../../../styles/prose.css";
+
+export async function getStaticPaths() {
+  const docs = await getCollection("docs");
+  return getLocalizedSlugStaticPaths(docs, "doc", getDocSlug);
+}
+
+const locale = getRouteLocale(Astro.params.locale);
+const { doc } = Astro.props as { doc: Awaited<ReturnType<typeof getCollection<"docs">>>[number] };
+const { Content } = await render(doc);
+---
+
+<BaseLayout title={doc.data.title} description={doc.data.description ?? doc.data.title} locale={locale}>
+  <article class="shell prose">
+    <h1>{doc.data.title}</h1>
+    <Content />
+  </article>
+</BaseLayout>
+
+<style>
+  article {
+    padding: 32px 0 64px;
+  }
+</style>

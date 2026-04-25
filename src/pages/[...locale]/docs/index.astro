@@ -1,0 +1,62 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import { getLocalizedStaticPaths, getRouteLocale } from "../../../lib/i18n-routing";
+import { getDocSlug } from "../../../lib/content-slugs";
+import { toLocalizedPath } from "../../../lib/routes";
+
+export function getStaticPaths() {
+  return getLocalizedStaticPaths();
+}
+
+const locale = getRouteLocale(Astro.params.locale);
+const docs = (await getCollection("docs"))
+  .filter((d) => d.data.locale === locale)
+  .sort((a, b) => a.data.order - b.data.order);
+---
+
+<BaseLayout title="Docs" description="Documentation." locale={locale}>
+  <section class="shell docs-list">
+    <h1>Docs</h1>
+    {docs.length === 0 && (
+      <p class="empty">No docs yet. Add some to <code>src/content/docs/</code>.</p>
+    )}
+    <ul>
+      {docs.map((doc) => (
+        <li>
+          <a href={toLocalizedPath(`/docs/${getDocSlug(doc)}/`, locale)}>
+            {doc.data.title}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+</BaseLayout>
+
+<style>
+  .docs-list {
+    padding: 48px 0 64px;
+  }
+  h1 {
+    margin-bottom: 24px;
+  }
+  ul {
+    list-style: none;
+    display: grid;
+    gap: 8px;
+  }
+  li a {
+    display: block;
+    padding: 12px 16px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--fg);
+  }
+  li a:hover {
+    text-decoration: none;
+    border-color: var(--accent);
+  }
+  .empty {
+    color: var(--muted);
+  }
+</style>

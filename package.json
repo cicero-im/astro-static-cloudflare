@@ -1,0 +1,69 @@
+{
+  "name": "astro-static-cloudflare",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Astro 6 static site template, deployed to Cloudflare Workers, with Vite+, Inlang/Paraglide i18n, and a full SEO/OG/sitemap stack.",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "NODE_OPTIONS='--max-old-space-size=5120 --max-semi-space-size=128' OG_CONCURRENCY=${OG_CONCURRENCY:-4} astro build",
+    "check": "vp check",
+    "fix": "vp check --fix",
+    "preview": "bun astro build && wrangler dev --config wrangler.toml",
+    "astro": "astro",
+    "generate-types": "wrangler types --config wrangler.toml",
+    "deploy": "bun run build && wrangler deploy --config wrangler.toml",
+    "cf-typegen": "wrangler types --config wrangler.toml",
+    "prepare": "vp config",
+    "machine-translate": "inlang machine translate --project project.inlang",
+    "paraglide:compile": "npx @inlang/paraglide-js compile --project ./project.inlang --outdir ./src/paraglide",
+    "i18n:validate": "npx @inlang/cli validate --project ./project.inlang",
+    "i18n:translate": "npx @inlang/cli machine translate --project ./project.inlang",
+    "lighthouse": "bunx @lhci/cli@0.14.0 autorun"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "^5.0.3",
+    "@astrojs/rss": "^4.0.18",
+    "@astrojs/sitemap": "^3.7.2",
+    "@fontsource/geist": "^5.2.8",
+    "@fontsource/inter": "^5.2.8",
+    "@fontsource/oswald": "^5.2.8",
+    "@fontsource/spectral": "^5.2.8",
+    "@louisbrulenaudet/astro-markdown-export": "^0.0.1",
+    "astro": "^6.1.5",
+    "astro-gtm": "^6.0.0",
+    "astro-opengraph-images": "^1.14.3",
+    "astro-pagefind": "^1.8.6",
+    "astro-purgecss": "^6.0.1",
+    "astro-robots-txt": "^1.0.0",
+    "astro-seo": "^1.1.0",
+    "astro-seo-meta": "^6.0.0",
+    "astro-seo-schema": "^6.0.0",
+    "astro-sitemap": "^1.0.0",
+    "astro-skills": "^0.1.0",
+    "astro-webmanifest": "^1.0.0",
+    "dayjs": "^1.11.20",
+    "lenis": "^1.3.23",
+    "mdast-util-to-string": "^4.0.0",
+    "reading-time": "^1.5.0",
+    "sharp": "^0.34.5"
+  },
+  "devDependencies": {
+    "@inlang/cli": "^3.1.9",
+    "@inlang/paraglide-js": "^2.16.0",
+    "rollup-plugin-visualizer": "^7.0.1",
+    "vite-plus": "^0.1.19",
+    "wrangler": "^4.84.1"
+  },
+  "overrides": {
+    "vite": "npm:@voidzero-dev/vite-plus-core@latest",
+    "vitest": "npm:@voidzero-dev/vite-plus-test@latest"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "packageManager": "bun@1.3.11",
+  "patchedDependencies": {
+    "astro-opengraph-images@1.14.3": "patches/astro-opengraph-images@1.14.3.patch"
+  }
+}

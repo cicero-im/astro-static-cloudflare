@@ -1,0 +1,57 @@
+---
+import { SITE_TITLE } from "../../consts";
+import { toLocalizedPath } from "../../lib/routes";
+
+interface Props {
+  locale: string;
+}
+const { locale } = Astro.props;
+---
+
+<header class="site-nav">
+  <div class="shell nav-in">
+    <a class="brand" href={toLocalizedPath("/", locale)}>{SITE_TITLE}</a>
+    <nav aria-label="Primary">
+      <ul class="nav-links">
+        <li><a href={toLocalizedPath("/blog/", locale)}>Blog</a></li>
+        <li><a href={toLocalizedPath("/docs/", locale)}>Docs</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-in {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+  }
+  .brand {
+    font-family: var(--ff-display);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: var(--fg);
+    text-transform: uppercase;
+  }
+  .brand:hover {
+    text-decoration: none;
+  }
+  .nav-links {
+    display: flex;
+    gap: 24px;
+    list-style: none;
+    font-family: var(--ff-ui);
+  }
+  .nav-links a {
+    color: var(--fg);
+  }
+</style>

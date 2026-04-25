@@ -1,0 +1,59 @@
+---
+import type { CollectionEntry } from "astro:content";
+import BaseLayout from "./BaseLayout.astro";
+import FormattedDate from "../components/FormattedDate.astro";
+import { Image } from "astro:assets";
+import { blogPostingJsonLd } from "../lib/seo";
+import { resolveContentOgImage } from "../lib/content-images";
+import { parseLastModified } from "../lib/modified-time";
+import { toAbsoluteUrl } from "../lib/routes";
+import "../styles/prose.css";
+
+interface Props {
+  post: CollectionEntry<"blog">;
+  locale: string;
+}
+
+const { post, locale } = Astro.props;
+const d = post.data;
+const modifiedDate = parseLastModified(d.lastModified);
+const ogImage = resolveContentOgImage(d.ogImage, d.heroImage);
+const url = toAbsoluteUrl(Astro.url.pathname);
+---
+
+<BaseLayout
+  title={d.title}
+  description={d.description}
+  ogImage={ogImage}
+  pubDate={d.pubDate}
+  updatedDate={modifiedDate ?? d.updatedDate}
+  locale={locale}
+  category={d.category}
+  tags={d.tags}
+  jsonLd={[blogPostingJsonLd(post, url, locale, modifiedDate)]}
+>
+  <article class="shell prose">
+    <header>
+      <h1>{d.title}</h1>
+      <p class="meta">
+        <FormattedDate date={d.pubDate} locale={locale} />
+        {d.minutesRead && <> · {d.minutesRead}</>}
+      </p>
+      {d.heroImage && <Image src={d.heroImage} alt="" />}
+    </header>
+
+    <slot />
+  </article>
+</BaseLayout>
+
+<style>
+  article {
+    padding: 32px 0 64px;
+  }
+  .meta {
+    color: var(--muted);
+    font-family: var(--ff-ui);
+    font-size: 14px;
+    margin-bottom: 1.5em;
+  }
+</style>

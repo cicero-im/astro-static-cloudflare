@@ -1,0 +1,18 @@
+---
+interface Props {
+  date: Date;
+  locale: string;
+}
+
+const { date, locale } = Astro.props;
+const isArabic = locale === "ar" || locale.startsWith("ar-");
+const fmtLocale = isArabic ? "ar-u-ca-islamic-umalqura-nu-arab" : locale;
+---
+
+<time datetime={date.toISOString()}>
+  {date.toLocaleDateString(fmtLocale, {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  })}
+</time>

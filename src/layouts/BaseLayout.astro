@@ -1,0 +1,65 @@
+---
+import BaseHead from "../components/BaseHead.astro";
+import Nav from "../components/ui/Nav.astro";
+import Footer from "../components/ui/Footer.astro";
+import { locales } from "../paraglide/runtime.js";
+import { toLocalizedPath } from "../lib/routes";
+
+interface Props {
+  title: string;
+  description: string;
+  ogImage?: string;
+  pubDate?: Date;
+  updatedDate?: Date;
+  locale: string;
+  translationOf?: string;
+  canonicalUrl?: string;
+  noIndex?: boolean;
+  noFollow?: boolean;
+  category?: string;
+  tags?: string[];
+  authorUrl?: string;
+  jsonLd?: Array<Record<string, unknown>>;
+  bodyClass?: string;
+}
+
+const props = Astro.props;
+const locale = props.locale;
+const currentPath = Astro.url.pathname;
+---
+
+<!doctype html>
+<html lang={locale} dir="ltr">
+  <head>
+    <BaseHead {...props} />
+  </head>
+  <body class:list={[props.bodyClass]}>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <Nav locale={locale} />
+    <main id="main-content">
+      <slot />
+    </main>
+    <Footer locale={locale} />
+
+    <nav aria-hidden="true" style="display:none">
+      {locales.map((loc) => (
+        <a href={toLocalizedPath(currentPath, loc)}>{loc}</a>
+      ))}
+    </nav>
+
+    <script>
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("in");
+              observer.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.1, rootMargin: "0px 0px -40px 0px" },
+      );
+      document.querySelectorAll(".r").forEach((el) => observer.observe(el));
+    </script>
+  </body>
+</html>

@@ -1,0 +1,109 @@
+@import "./fonts.css";
+
+:root {
+  --bg: #ffffff;
+  --fg: #111111;
+  --muted: #555555;
+  --border: #e2e2e0;
+  --accent: #0066ff;
+
+  --ff-display: "Oswald", system-ui, sans-serif;
+  --ff-body: "Spectral", Georgia, serif;
+  --ff-mono: "Geist", ui-monospace, monospace;
+  --ff-ui: "Inter", system-ui, sans-serif;
+
+  --page-max: 1240px;
+  --page-px: clamp(20px, 4vw, 44px);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d0d0d;
+    --fg: #f4f3f1;
+    --muted: #a8a8a6;
+    --border: #2a2a28;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--ff-body);
+  font-size: 17px;
+  line-height: 1.65;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--ff-display);
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+}
+
+img, svg, video {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+code, pre, kbd {
+  font-family: var(--ff-mono);
+}
+
+.shell {
+  max-width: var(--page-max);
+  margin: 0 auto;
+  padding: 0 var(--page-px);
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+}
+.skip-link:focus {
+  left: var(--page-px);
+  top: 8px;
+  background: var(--bg);
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  z-index: 10;
+}
+
+.r {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 320ms ease, transform 320ms ease;
+}
+.r.in {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .r {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "$schema": "https://inlang.com/schema/inlang-message-format",
+  "site_title": "Astro Static Cloudflare",
+  "nav_blog": "Blog",
+  "nav_docs": "Docs",
+  "footer_rights": "All rights reserved."
+}

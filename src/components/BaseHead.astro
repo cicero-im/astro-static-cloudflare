@@ -1,0 +1,111 @@
+---
+import { toLocalizedPath } from "../lib/routes";
+import { baseLocale, locales } from "../paraglide/runtime.js";
+import { SITE_TITLE, SITE_URL } from "../consts";
+import "../styles/global.css";
+
+import oswaldLatinWoff2 from "@fontsource/oswald/files/oswald-latin-700-normal.woff2?url";
+import spectralLatinWoff2 from "@fontsource/spectral/files/spectral-latin-300-normal.woff2?url";
+import interLatinWoff2 from "@fontsource/inter/files/inter-latin-700-normal.woff2?url";
+
+interface Props {
+  title: string;
+  description: string;
+  ogImage?: string;
+  pubDate?: Date;
+  updatedDate?: Date;
+  locale: string;
+  canonicalUrl?: string;
+  noIndex?: boolean;
+  noFollow?: boolean;
+  category?: string;
+  tags?: string[];
+  authorUrl?: string;
+  jsonLd?: Array<Record<string, unknown>>;
+}
+
+const {
+  title,
+  description,
+  ogImage,
+  locale,
+  pubDate,
+  updatedDate,
+  canonicalUrl,
+  noIndex = false,
+  noFollow = false,
+  category,
+  tags = [],
+  authorUrl,
+  jsonLd = [],
+} = Astro.props;
+
+const canonical = canonicalUrl ?? `${SITE_URL}${Astro.url.pathname}`;
+
+// astro-opengraph-images writes <page>.png next to each rendered HTML file
+// (e.g. dist/index.html → dist/index.png, dist/blog/index.html → dist/blog/index.png).
+// The og:image meta must point to the matching URL. Pages can override.
+const ogPath =
+  Astro.url.pathname === "/" ? "/index.png" : `${Astro.url.pathname}index.png`;
+const resolvedOgImage = ogImage ?? `${SITE_URL}${ogPath}`;
+
+const robotsContent = [
+  noIndex ? "noindex" : "index",
+  noFollow ? "nofollow" : "follow",
+].join(", ");
+
+const fullTitle = `${title} | ${SITE_TITLE}`;
+
+const pathname = Astro.url.pathname;
+const hreflangLinks: Array<{ hreflang: string; href: string }> = locales.map(
+  (loc) => ({
+    hreflang: loc,
+    href: `${SITE_URL}${toLocalizedPath(pathname, loc)}`,
+  }),
+);
+hreflangLinks.push({
+  hreflang: "x-default",
+  href: `${SITE_URL}${toLocalizedPath(pathname, baseLocale)}`,
+});
+---
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<link rel="preload" href={oswaldLatinWoff2} as="font" type="font/woff2" crossorigin />
+<link rel="preload" href={spectralLatinWoff2} as="font" type="font/woff2" crossorigin />
+<link rel="preload" href={interLatinWoff2} as="font" type="font/woff2" crossorigin />
+
+<title>{fullTitle}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+<meta name="robots" content={robotsContent} />
+<meta name="generator" content={Astro.generator} />
+
+<meta property="og:type" content={pubDate ? "article" : "website"} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:image" content={resolvedOgImage} />
+<meta property="og:url" content={canonical} />
+<meta property="og:site_name" content={SITE_TITLE} />
+<meta property="og:locale" content={locale} />
+{pubDate && <meta property="article:published_time" content={pubDate.toISOString()} />}
+{updatedDate && <meta property="article:modified_time" content={updatedDate.toISOString()} />}
+{authorUrl && <meta property="article:author" content={authorUrl} />}
+{category && <meta property="article:section" content={category} />}
+{tags.map((tag) => <meta property="article:tag" content={tag} />)}
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={resolvedOgImage} />
+
+{hreflangLinks.map((link) => <link rel="alternate" hreflang={link.hreflang} href={link.href} />)}
+
+<link rel="alternate" type="application/rss+xml" title={`${SITE_TITLE} Blog`} href="/rss.xml" />
+
+{jsonLd.map((schema) => (
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schema)} />
+))}
+
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />

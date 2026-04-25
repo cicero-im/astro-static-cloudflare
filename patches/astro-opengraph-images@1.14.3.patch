@@ -1,0 +1,30 @@
+diff --git a/dist/hook.js b/dist/hook.js
+index 36ffe05b4918525dfb201890bb99547d2e825f43..df277b51e79e985c9de49ddb70a16e328cebaf27 100644
+--- a/dist/hook.js
++++ b/dist/hook.js
+@@ -8,8 +8,23 @@ import * as jsdom from "jsdom";
+ import path from "path";
+ export async function buildDoneHook({ logger, pages, options, dir, render, }) {
+     logger.info("Generating Open Graph images");
+-    const promises = pages.map((page) => handlePage({ page, options, render, dir, logger }));
+-    await Promise.all(promises);
++    const concurrency = Math.max(1, Number(process.env.OG_CONCURRENCY) || 4);
++    let cursor = 0;
++    let done = 0;
++    const total = pages.length;
++    const worker = async () => {
++        while (true) {
++            const i = cursor++;
++            if (i >= total) return;
++            await handlePage({ page: pages[i], options, render, dir, logger });
++            done++;
++            if (done % 100 === 0 || done === total) {
++                logger.info(`Open Graph images: ${done}/${total}`);
++            }
++        }
++    };
++    const workers = Array.from({ length: Math.min(concurrency, total) }, worker);
++    await Promise.all(workers);
+ }
+ async function handlePage({ page, options, render, dir, logger }) {
+     // gets the absolute path to the HTML file. E.g. /home/user/project/dist/blog/index.html
